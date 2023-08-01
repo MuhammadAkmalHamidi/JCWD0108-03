@@ -23,6 +23,7 @@ export const DetailProduct = () => {
         }
     }
 
+    const [loadingCartUpdate, setLoadingCartUpdate] = useState(false);
 
     const dataProduct = async (id) => {
         try {
@@ -33,12 +34,26 @@ export const DetailProduct = () => {
         };
     };
 
-    useEffect(() => {
-        dataProduct()
-    }, [reload])
+    const getCartByUser = async () => {
+        try {
+            setLoadingCartUpdate(true);
+            const token = localStorage.getItem('token');
+            const response = await Axios.get('http://localhost:8000/api/cart', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const cartItems = response.data.result;
+            setCartItems(cartItems);
+            setLoadingCartUpdate(false);
+        } catch (error) {
+            setLoadingCartUpdate(false);
+            console.error(error);
+        };
+    };
 
-    const data = useSelector((state) => state.user.value.isAdmin)
-    console.log(data);
+    useEffect(() => {
+        dataProduct();
+        getCartByUser();
+    }, [loadingCartUpdate]);
 
     return (
         <Box>
