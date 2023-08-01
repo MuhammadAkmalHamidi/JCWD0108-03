@@ -173,6 +173,33 @@ module.exports = {
                 message: "Internal server error."
             });
         }
+    },
+    activeProduct: async (req, res) => {
+        try {
+            const data = await products.findOne(
+                {where : {id : req.body.productId}}
+            )
+            if (data.isActive) {
+                await products.update(
+                    {isActive : 0},
+                    {where : {id : data.id}}
+                )
+                res.status(200).send({message : "deactive success"})
+            }
+            else {
+                await products.update(
+                    {isActive : 1},
+                    {where : {id : data.id}}
+                    )
+                    res.status(200).send({message : "actived success"})
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                status: 500,
+                message: "Internal server error."
+            });
+        }
     }
 }
 
