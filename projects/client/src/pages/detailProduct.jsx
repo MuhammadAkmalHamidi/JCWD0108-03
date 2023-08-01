@@ -51,13 +51,11 @@ export const DetailProduct = () => {
     };
 
     useEffect(() => {
-        dataProduct()
         dataProduct();
         getCartByUser();
     }, [loadingCartUpdate]);
 
     const data = useSelector((state) => state.user.value.isAdmin)
-    console.log(data);
 
     return (
         <Box>
