@@ -89,12 +89,12 @@ module.exports = {
                 where: { CategoryId: id }
             });
             const result = await products.findAll(
-                { where: { CategoryId: id }, limit, offset: limit * (page - 1) }
-            );
+                {where: { CategoryId: id } && {isActive : 1}, limit,offset : limit * (page - 1) }
+                );
             res.status(200).send({
-                page: page,
-                totalPage: Math.ceil(totalProduct / limit),
-                result
+                page : page,
+                totalPage : Math.ceil(totalProduct / limit),  
+                 result
             });
         } catch (error) {
             res.status(500).send({
@@ -138,13 +138,20 @@ module.exports = {
     },
     getAllProducts: async (req, res) => {
         try {
-            const result = await products.findAll();
-
-            res.status(200).send({
-                status: 200,
-                result: result
-            });
+            const page = req.query.page || 1
+            const limit = req.query.limit || 8
+            const sort = req.query.sort || "ASC"
+            const sortBy = req.query.sortBy
+            const result = await products.findAll(
+                {
+                    order : [[sortBy, sort]],
+                    limit,
+                    offset : limit * (page - 1)
+                }
+                )
+            res.status(200).send(result)
         } catch (error) {
+            console.log(error);
             res.status(500).send({
                 status: 500,
                 message: "Internal server error."
